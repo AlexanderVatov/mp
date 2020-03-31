@@ -1,0 +1,45 @@
+#include <iostream>
+using std::cout;
+using std::endl;
+
+template <typename Fragment>
+MP::BasicInteger<Fragment>::BasicInteger(long value) {
+  positive = true;
+  size = 0;
+  fragments = nullptr;
+
+  if(value < 0) {
+    positive = false;
+    value = -value;
+  }
+  Fragment unitMask = Fragment(-1);
+  // cout << "Fragment mask: " << int(unitMask) << endl;
+  //First determine the necessary size
+  long value2 = value;
+  while(value2) {
+    ++size;
+    value2 = value2 >> 8*sizeof(Fragment);
+  }
+
+  //Now allocate the array
+  fragments = new Fragment[size];
+  for (int i = 0; i < size; ++i) {
+    fragments[i] = value & unitMask;
+    value = value >> 8*sizeof(Fragment);
+  }
+}
+
+template <typename Fragment>
+MP::BasicInteger<Fragment>::~BasicInteger() {
+  delete [] fragments;
+}
+
+template <typename Fragment>
+MP::BasicInteger<Fragment>::operator long() const {
+  long result = 0;
+  for(int i = 0; i < size; ++i) {
+    result += (unsigned long)fragments[i] << i*8*sizeof(Fragment);
+  }
+  if(!positive) result = -result;
+  return result;
+}
