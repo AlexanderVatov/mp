@@ -7,4 +7,4 @@ the unit tests on GNU/Linux or macOS, run `g++ mp_test.cpp -o test && ./test --l
 (or run the included binary for macOS: `./test --log_level=all`). `factorial` and `fibonacci`
 can be built in the same way: `g++ fibonacci.cpp -o fibonacci && ./fibonacci` or
 `g++ factorial.cpp -o factorial && ./factorial`, respectively. Again, binaries are included
-for macOS.
+for macOS. To run expmod, run `python expmod.py [a] [b] [n]`.
