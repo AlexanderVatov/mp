@@ -10,7 +10,7 @@ using std::uint16_t;
 using std::uint32_t;
 
 BOOST_AUTO_TEST_CASE(Conversions) {
-  //Equalities with small numbers
+  //Equalities with "special" numbers
   BOOST_TEST(long(Integer(0)) == 0);
   BOOST_TEST(long(Integer(1)) == 1);
   BOOST_TEST(long(Integer(-1)) == -1);
@@ -37,22 +37,7 @@ BOOST_AUTO_TEST_CASE(Sizes) {
 BOOST_AUTO_TEST_CASE(Addition) {
   BOOST_TEST(long(Integer(0) + Integer(0))==0);
   BOOST_TEST(long(Integer(0) + Integer(1))==1);
+  BOOST_TEST(long(BasicInteger<uint8_t>(255) + BasicInteger<uint8_t>(1))==256);
   BOOST_TEST(long(BasicInteger<uint8_t>(255) + BasicInteger<uint8_t>(255))==510);
   BOOST_TEST(long(Integer(1932353877895501793) + Integer(4245370126020644564))==6177724003916146357);
-}
-
-BOOST_AUTO_TEST_CASE(AdditionAssignment) {
-  BasicInteger<unsigned char> n = 0;
-  n += 0;
-  BOOST_TEST(long(n) == 0);
-  n += 1;
-  BOOST_TEST(long(n) == 1);
-  n += 255;
-  BOOST_TEST(long(n) == 256);
-  n +=1000000;
-  BOOST_TEST(long(n) == 1000256);
-
-  n = 255;
-  n += 255;
-  BOOST_TEST(long(n) == 510);
 }

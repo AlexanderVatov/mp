@@ -12,10 +12,14 @@ MP_TempIntFrag
 MP_IntFrag::BasicInteger(long value) {
   // cout << "Public constructor executing: " << value << "\n";
 
-  if(value >= 0) positive = true;
-  else {
+  positive = true;
+  if (value < 0) {
     positive = false;
     value = -value;
+  }
+  else if(value == 0) {
+    _size = 0;
+    fragments = nullptr;
   }
   Fragment unitMask = std::numeric_limits<Fragment>::max();
 
@@ -59,7 +63,7 @@ MP_IntFrag::BasicInteger(long value, unsigned int size) {
 MP_TempIntFrag
 MP_IntFrag::~BasicInteger() {
   // cout << "Destructor executing: " << fragments << "\n";
-  delete [] fragments;
+  if(fragments) delete [] fragments;
 }
 
 MP_TempIntFrag
@@ -80,6 +84,7 @@ MP_IntFrag::operator long() const {
 MP_TempIntFrag
 MP_IntFrag MP_IntFrag::operator+(MP_IntFrag const& other) const {
   //TODO: Replace with subtraction if either is negative
+  assert(positive && other.positive);
 
   const MP_IntFrag *shorter, *longer;
   if(this->_size <= other._size) {
@@ -115,12 +120,9 @@ MP_IntFrag MP_IntFrag::operator+(MP_IntFrag const& other) const {
     temp += longer->fragments[i];
     result.fragments[i] = temp;
   }
-  result.fragments[result._size - 1] += carry;
+  result.fragments[result._size - 1] = carry;
 
   return result;
-  // MP_IntFrag result = *this;
-  // result += other;
-  // return result;
 }
 
 MP_TempIntFrag
@@ -131,11 +133,28 @@ MP_IntFrag & MP_IntFrag::operator+=(MP_IntFrag const & other) {
 
 MP_TempIntFrag
 MP_IntFrag & MP_IntFrag::operator=(MP_IntFrag const & other) {
-  delete[] fragments;
+  cout << "Assignment\n";
+  if(fragments) delete[] fragments;
   _size = other._size;
   fragments = new Fragment[_size];
   for(int i = 0; i < _size; ++i) fragments[i] = other.fragments[i];
   return *this;
+}
+
+//Move assignment
+MP_TempIntFrag
+MP_IntFrag & MP_IntFrag::operator=(MP_IntFrag&& other) {
+  // cout << "Move assignment\n";
+    if(this != &other) {
+        if(fragments) delete[] fragments;
+        fragments = other.fragments;
+        _size = other._size;
+
+        // The other object should be left in a valid state
+        other.fragments = nullptr;
+        other._size = 0;
+    }
+    return *this;
 }
 
 MP_TempIntFrag

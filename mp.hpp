@@ -1,8 +1,7 @@
 #ifndef MP_HPP
 #define MP_HPP
 
-// Why a warning would be issued for using a widely adopted ten-year-old standard
-// is beyond me
+// C++11 is required for performance reasons.
 #pragma clang diagnostic ignored "-Wc++11-extensions"
 
 #include <limits>
@@ -24,7 +23,8 @@ namespace MP {
     operator long() const;
     BasicInteger<Fragment> operator+(BasicInteger<Fragment> const &) const;
     BasicInteger<Fragment>& operator+=(BasicInteger<Fragment> const &);
-    BasicInteger<Fragment>& operator=(BasicInteger<Fragment> const &);
+    BasicInteger<Fragment>& operator=(BasicInteger<Fragment> const &); // Copy
+    BasicInteger<Fragment>& operator=(BasicInteger<Fragment> && other); // Move
 
 
   protected:
