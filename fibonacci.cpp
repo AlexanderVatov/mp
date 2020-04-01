@@ -9,8 +9,6 @@ int main(int argc, char** argv) {
     a = b;
     b = c;
   }
-  if(c.hex() == "0x1f12062f76909038c5")
-    std::cout << "Result for u100 matches the expected value!\n";
-
-  std::cout << "u101 (in hexadecimal): " << (a + b).hex() << std::endl;
+  std::cout << "u100 = " << c.hex() << "; expected value: 0x1f12062f76909038c5\n";
+  std::cout << "u101 = " << (a+b).hex() << "; expected value: 0x3245e1a61e5624f888\n";
 }
