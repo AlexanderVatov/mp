@@ -20,11 +20,11 @@ BOOST_AUTO_TEST_CASE(Conversions) {
   BOOST_TEST(long(Integer(-54783912)) == -54783912);
 
   //Equalities with using a different fragment size
-  BOOST_TEST(long(BasicInteger<uint16_t>(1687456364462140721)) == 1687456364462140721);
-  BOOST_TEST(long(BasicInteger<uint16_t>(-3946403960656731443)) == -3946403960656731443);
+  BOOST_TEST(long(BasicInteger<uint16_t>(1687456364462140721l)) == 1687456364462140721l);
+  BOOST_TEST(long(BasicInteger<uint16_t>(-3946403960656731443l)) == -3946403960656731443l);
 
-  BOOST_TEST(long(BasicInteger<uint32_t>(1212375737939285076)) == 1212375737939285076);
-  BOOST_TEST(long(BasicInteger<uint32_t>(-9755677176384584)) == -9755677176384584);
+  BOOST_TEST(long(BasicInteger<uint32_t>(1212375737939285076l)) == 1212375737939285076l);
+  BOOST_TEST(long(BasicInteger<uint32_t>(-9755677176384584l)) == -9755677176384584l);
 }
 
 BOOST_AUTO_TEST_CASE(Sizes) {
@@ -39,5 +39,15 @@ BOOST_AUTO_TEST_CASE(Addition) {
   BOOST_TEST(long(Integer(0) + Integer(1))==1);
   BOOST_TEST(long(BasicInteger<uint8_t>(255) + BasicInteger<uint8_t>(1))==256);
   BOOST_TEST(long(BasicInteger<uint8_t>(255) + BasicInteger<uint8_t>(255))==510);
-  BOOST_TEST(long(Integer(1932353877895501793) + Integer(4245370126020644564))==6177724003916146357);
+  BOOST_TEST(long(Integer(1932353877895501793l) + Integer(4245370126020644564l))==6177724003916146357l);
+}
+
+BOOST_AUTO_TEST_CASE(Multiplication) {
+  BOOST_TEST(long(Integer(0) * Integer(0)) == 0);
+  BOOST_TEST(long(Integer(0) * Integer(1)) == 0);
+  BOOST_TEST(long(Integer(1) * Integer(1)) == 1);
+  BOOST_TEST(long(Integer(1) * Integer(1000)) == 1000);
+  BOOST_TEST(long(Integer(3) * Integer(100)) == 300);
+  BOOST_TEST(long(BasicInteger<uint8_t>(21596494) * BasicInteger<uint8_t>(809197923)) == 17475838088881962l);
+
 }

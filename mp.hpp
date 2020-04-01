@@ -5,6 +5,7 @@
 #pragma clang diagnostic ignored "-Wc++11-extensions"
 
 #include <limits>
+#include <string>
 
 namespace MP {
   template <typename Fragment>
@@ -18,14 +19,18 @@ namespace MP {
     BasicInteger(BasicInteger<Fragment> &&) = default; //Default move constructor
     ~BasicInteger();
 
+
     inline unsigned int size() const;
+    unsigned int effectiveSize() const;
+    std::string hex(bool prepend0x = true) const;
 
     operator long() const;
     BasicInteger<Fragment> operator+(BasicInteger<Fragment> const &) const;
+    BasicInteger<Fragment> operator*(BasicInteger<Fragment> const &) const;
     BasicInteger<Fragment>& operator+=(BasicInteger<Fragment> const &);
+    BasicInteger<Fragment>& operator*=(BasicInteger<Fragment> const &);
     BasicInteger<Fragment>& operator=(BasicInteger<Fragment> const &); // Copy
     BasicInteger<Fragment>& operator=(BasicInteger<Fragment> && other); // Move
-
 
   protected:
     BasicInteger(long value, unsigned int size);
@@ -37,7 +42,7 @@ namespace MP {
     Fragment* fragments;
   };
 
-  typedef BasicInteger<unsigned char> Integer;
+  typedef BasicInteger<uint8_t> Integer;
 }
 
 #include "mp.template"
