@@ -42,7 +42,7 @@ namespace MP {
     Fragment* fragments;
   };
 
-  typedef BasicInteger<uint8_t> Integer;
+  typedef BasicInteger<uint16_t> Integer;
 }
 
 #include "mp.template"

@@ -46,6 +46,8 @@ BOOST_AUTO_TEST_CASE(Multiplication) {
   BOOST_TEST(long(Integer(0) * Integer(0)) == 0);
   BOOST_TEST(long(Integer(0) * Integer(1)) == 0);
   BOOST_TEST(long(Integer(1) * Integer(1)) == 1);
+  BOOST_TEST(long(Integer(-1) * Integer(-1)) == 1);
+  BOOST_TEST(long(Integer(1) * Integer(-1)) == -1);
   BOOST_TEST(long(Integer(1) * Integer(1000)) == 1000);
   BOOST_TEST(long(Integer(3) * Integer(100)) == 300);
   BOOST_TEST(long(BasicInteger<uint8_t>(21596494) * BasicInteger<uint8_t>(809197923)) == 17475838088881962l);

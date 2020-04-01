@@ -92,6 +92,7 @@ std::string MP_IntFrag::hex(bool prepend0x) const {
   return out.str();
 }
 
+
 MP_TempIntFrag
 MP_IntFrag::operator long() const {
   long result = 0;
@@ -152,6 +153,7 @@ MP_IntFrag MP_IntFrag::operator*(MP_IntFrag const& other) const {
     Fragment carry = 0;
     Fragment base = std::numeric_limits<Fragment>::max();
     MP_IntFrag result(0,  k + l);
+    result.positive = (positive == other.positive);
     uintmax_t temp = 0;
     for(unsigned int i = 0; i < k; ++i) {
       carry = 0;
