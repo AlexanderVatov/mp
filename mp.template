@@ -1,45 +1,160 @@
 #include <iostream>
 using std::cout;
 using std::endl;
+using std::sprintf;
 
-template <typename Fragment>
-MP::BasicInteger<Fragment>::BasicInteger(long value) {
-  positive = true;
-  size = 0;
-  fragments = nullptr;
+#include <limits>
 
-  if(value < 0) {
+#define MP_TempIntFrag template <typename Fragment>
+#define MP_IntFrag MP::BasicInteger<Fragment>
+
+MP_TempIntFrag
+MP_IntFrag::BasicInteger(long value) {
+  // cout << "Public constructor executing: " << value << "\n";
+
+  if(value >= 0) positive = true;
+  else {
     positive = false;
     value = -value;
   }
-  Fragment unitMask = Fragment(-1);
-  // cout << "Fragment mask: " << int(unitMask) << endl;
-  //First determine the necessary size
+  Fragment unitMask = std::numeric_limits<Fragment>::max();
+
+  _size = 0;
   long value2 = value;
   while(value2) {
-    ++size;
+    ++_size;
     value2 = value2 >> 8*sizeof(Fragment);
   }
 
   //Now allocate the array
-  fragments = new Fragment[size];
-  for (int i = 0; i < size; ++i) {
+  fragments = new Fragment[_size]; //Legal even if _size == 0
+  for (int i = 0; i < _size; ++i) {
     fragments[i] = value & unitMask;
     value = value >> 8*sizeof(Fragment);
   }
+
 }
 
-template <typename Fragment>
-MP::BasicInteger<Fragment>::~BasicInteger() {
+MP_TempIntFrag
+MP_IntFrag::BasicInteger(long value, unsigned int size) {
+  // cout << "Private constructor executing: " << value << "\n";
+  if(value >= 0) positive = true;
+  else {
+    positive = false;
+    value = -value;
+  }
+  _size = size;
+
+  Fragment unitMask = std::numeric_limits<Fragment>::max();
+  fragments = new Fragment[_size];
+
+  for (int i = 0; i < _size; ++i) {
+    fragments[i] = value & unitMask;
+    value = value >> 8*sizeof(Fragment);
+  }
+  // cout << "After private constructor: " << long(*this) << "\n";
+}
+
+
+MP_TempIntFrag
+MP_IntFrag::~BasicInteger() {
+  // cout << "Destructor executing: " << fragments << "\n";
   delete [] fragments;
 }
 
-template <typename Fragment>
-MP::BasicInteger<Fragment>::operator long() const {
+MP_TempIntFrag
+inline unsigned int MP_IntFrag::size() const {
+  return _size;
+}
+
+MP_TempIntFrag
+MP_IntFrag::operator long() const {
   long result = 0;
-  for(int i = 0; i < size; ++i) {
+  for(int i = 0; i < _size; ++i) {
     result += (unsigned long)fragments[i] << i*8*sizeof(Fragment);
   }
   if(!positive) result = -result;
   return result;
 }
+
+MP_TempIntFrag
+MP_IntFrag MP_IntFrag::operator+(MP_IntFrag const& other) const {
+  //TODO: Replace with subtraction if either is negative
+
+  const MP_IntFrag *shorter, *longer;
+  if(this->_size <= other._size) {
+    shorter = this;
+    longer = &other;
+  } else {
+    shorter = &other;
+    longer = this;
+  }
+
+  MP_IntFrag result(0, longer->_size + 1);
+
+  Fragment carry = 0;
+  Fragment max = std::numeric_limits<Fragment>::max();
+  int i;
+  for(i = 0; i < shorter->_size; ++i) {
+    Fragment temp = carry;
+    carry = 0;
+    if(temp > max - fragments[i]) carry += 1;
+    //C++11 guarrantees modulo overflow for unsigned types
+    temp += fragments[i];
+    if(temp > max - other.fragments[i]) carry += 1;
+    temp += other.fragments[i];
+
+    result.fragments[i] = temp;
+  }
+
+  for(; i < longer->_size; ++i) {
+    Fragment temp = carry;
+    carry = 0;
+    if(temp > max - fragments[i]) carry += 1;
+    //C++11 guarrantees modulo overflow for unsigned types
+    temp += longer->fragments[i];
+    result.fragments[i] = temp;
+  }
+  result.fragments[result._size - 1] += carry;
+
+  return result;
+  // MP_IntFrag result = *this;
+  // result += other;
+  // return result;
+}
+
+MP_TempIntFrag
+MP_IntFrag & MP_IntFrag::operator+=(MP_IntFrag const & other) {
+  *this = *this + other;
+  return *this;
+}
+
+MP_TempIntFrag
+MP_IntFrag & MP_IntFrag::operator=(MP_IntFrag const & other) {
+  delete[] fragments;
+  _size = other._size;
+  fragments = new Fragment[_size];
+  for(int i = 0; i < _size; ++i) fragments[i] = other.fragments[i];
+  return *this;
+}
+
+MP_TempIntFrag
+void MP_IntFrag::relocate(int newSize) {
+  // cout << "Before relocate: " << long(*this) << endl;
+  if(_size >= newSize) {
+    // cout << "Not relocating!" << endl;
+    return;
+  }
+  Fragment* newFragments = new Fragment[newSize];
+
+  int i = 0;
+  for(; i < _size; ++i) newFragments[i] = fragments[i];
+  for(; i < newSize; ++i) newFragments[i] = 0;
+  _size = newSize;
+  fragments = newFragments;
+  // cout << "After relocate: " << long(*this) << endl;
+}
+
+
+#undef MP_TempIntFrag
+#undef MP_IntFrag
